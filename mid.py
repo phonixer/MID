@@ -215,6 +215,8 @@ class MID():
 
         self.train_data_path = osp.join(self.config.data_dir,self.config.dataset + "_train.pkl")
         self.eval_data_path = osp.join(self.config.data_dir,self.config.dataset + "_test.pkl")
+        print(f"Train data path: {self.train_data_path}")
+        print(f"Eval data path: {self.eval_data_path}")
         print("> Directory built!")
 
     def _build_optimizer(self):
