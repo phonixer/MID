@@ -26,7 +26,7 @@ class MID():
         torch.backends.cudnn.benchmark = True
         self._build()
 
-    def train(self):
+    def 可train(self):
         for epoch in range(1, self.config.epochs + 1):
             self.train_dataset.augment = self.config.augment
             for node_type, data_loader in self.train_data_loader.items():

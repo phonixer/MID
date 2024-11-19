@@ -12,8 +12,8 @@ import pdb
 def parse_args():
     parser = argparse.ArgumentParser(
         description='Pytorch implementation of MID')
-    parser.add_argument('--config', default='')
-    parser.add_argument('--dataset', default='')
+    parser.add_argument('--config', default='configs/baseline.yaml')
+    parser.add_argument('--dataset', default='eth')
     return parser.parse_args()
 
 
@@ -26,7 +26,7 @@ def main():
     for k, v in vars(args).items():
        config[k] = v
     config["exp_name"] = args.config.split("/")[-1].split(".")[0]
-    config["dataset"] = args.dataset[:-1]
+    config["dataset"] = args.dataset
     print(config)
     
     #pdb.set_trace()
