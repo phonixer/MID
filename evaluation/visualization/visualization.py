@@ -1,4 +1,4 @@
-from utils import prediction_output_to_trajectories
+from evaluation.trajectory_utils import prediction_output_to_trajectories
 import matplotlib.pyplot as plt
 import matplotlib.patheffects as pe
 import numpy as np
@@ -75,7 +75,7 @@ def visualize_prediction(ax,
                                                                                       ph,
                                                                                       map=map)
 
-    assert(len(prediction_dict.keys()) <= 1)
+    assert(len(prediction_dict.keys()) <= 1) # Only one timestep is supported for visualization
     if len(prediction_dict.keys()) == 0:
         return
     ts_key = list(prediction_dict.keys())[0]

@@ -12,13 +12,14 @@ import torch.nn as nn
 from tensorboardX import SummaryWriter
 from tqdm.auto import tqdm
 import pickle
-
+import matplotlib.pyplot as plt
 from dataset import EnvironmentDataset, collate, get_timesteps_data, restore
 from models.autoencoder import AutoEncoder
 from models.trajectron import Trajectron
 from utils.model_registrar import ModelRegistrar
 from utils.trajectron_hypers import get_traj_hypers
 import evaluation
+import evaluation.visualization
 
 class MID():
     def __init__(self, config):
@@ -148,6 +149,7 @@ class MID():
 
 
 
+
                 batch_error_dict = evaluation.compute_batch_statistics(predictions_dict,
                                                                        scene.dt,
                                                                        max_hl=max_hl,
@@ -161,8 +163,60 @@ class MID():
                 eval_ade_batch_errors = np.hstack((eval_ade_batch_errors, batch_error_dict[node_type]['ade']))
                 eval_fde_batch_errors = np.hstack((eval_fde_batch_errors, batch_error_dict[node_type]['fde']))
 
+                # 输出轨迹
+                print("1",len(batch[0]))
+                print(batch[0][-1])
+                # plt.figure()
+                plt.plot(traj_pred[0, 0, :, 0], traj_pred[0, 0, :, 1], 'r--', alpha=0.5, label='Prediction')
+                # plt.plot(test_batch['target_y'][nodes[0]][:, 0], test_batch['target_y'][nodes[0]][:, 1], 'g-', label='Ground Truth')
+                plt.legend()
+                print(scene)
+                print(self.eval_env)
+                    # 可视化代码
+                # fig, ax = plt.subplots()
+                # evaluation.visualization.visualize_prediction(ax, predictions_dict, scene.dt, max_hl, ph, map=scene.map)
+                # plt.title(f"Scene {i + 1}, Timestep {t}")
 
+                            # 可视化代码
+            for ts_key in predictions_dict.keys():
+                fig, ax = plt.subplots()
+                evaluation.visualization.visualize_prediction(ax, {ts_key: predictions_dict[ts_key]}, scene.dt, max_hl, ph, map=scene.map)
+                plt.title(f"Scene {i + 1}, Timestep {ts_key}")
+                plt.savefig(f"output/{self.config.dataset}_scene_{i + 1}_timestep_{ts_key}_epoch_{epoch}_sampling_{sampling}_stride_{step}.png")
+                plt.close(fig)
 
+            #      # 可视化代码
+            # for node in nodes:
+            #     plt.figure()
+                # # 绘制地图
+                # if hasattr(scene, 'map') and scene.map is not None:
+                #     print(scene.map)
+                #     plt.imshow(scene.map, extent=[0, scene.map.shape[1], 0, scene.map.shape[0]], origin='lower', cmap='gray')
+                #     plt.savefig(f"output/{self.config.dataset}_epoch{epoch}_sampling_{sampling}_stride_{step}11.png")
+
+                # plt.plot(test_batch['input_x'][node][:, 0], test_batch['input_x'][node][:, 1], 'b-', label='History')
+                # plt.plot(test_batch['target_y'][node][:, 0], test_batch['target_y'][node][:, 1], 'g-', label='Ground Truth')
+                # for j in range(predictions.shape[1]):
+                #     plt.plot(predictions[j, :, 0], predictions[j, :, 1], 'r--', alpha=0.5, label='Prediction' if j == 0 else "")
+                # plt.legend()
+                # plt.title(f"Scene {i + 1}, Node {node}")
+                # plt.show()
+                
+                
+                # # 可视化代码
+                # for node in nodes:
+                #     plt.figure()
+                #     plt.plot(test_batch['input_x'][node][:, 0], test_batch['input_x'][node][:, 1], 'b-', label='History')
+                #     plt.plot(test_batch['target_y'][node][:, 0], test_batch['target_y'][node][:, 1], 'g-', label='Ground Truth')
+                #     for j in range(predictions.shape[1]):
+                #         plt.plot(predictions[j, :, 0], predictions[j, :, 1], 'r--', alpha=0.5, label='Prediction' if j == 0 else "")
+                #     plt.legend()
+                #     plt.title(f"Scene {i + 1}, Node {node}")
+                #     plt.show()
+
+        
+        # plt.imshow(scene.map, extent=[0, scene.map.shape[1], 0, scene.map.shape[0]], origin='lower', cmap='gray')
+        plt.savefig(f"output/{self.config.dataset}_epoch{epoch}_sampling_{sampling}_stride_{step}.png")
         ade = np.mean(eval_ade_batch_errors)
         fde = np.mean(eval_fde_batch_errors)
 
@@ -173,6 +227,7 @@ class MID():
             ade = ade * 50
             fde = fde * 50
         print(f"Sampling: {sampling} Stride: {step}")
+        print('zzzzzzzzzzzrrrrrrrrrrrrrrgggggggggggg')
         print(f"Epoch {epoch} Best Of 20: ADE: {ade} FDE: {fde}")
         #self.log.info(f"Best of 20: Epoch {epoch} ADE: {ade} FDE: {fde}")
 
